@@ -1,0 +1,2 @@
+mlflow==1.17.0
+torchviz==0.0.2
