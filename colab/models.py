@@ -42,7 +42,8 @@ class Critic(nn.Module):
         self.fcs1 = nn.Linear(state_size, fcs1_units)
         self.fc2 = nn.Linear(fcs1_units+action_size, fc2_units)
         self.fc3 = nn.Linear(fc2_units, fc3_units)
-        self.fc4 = nn.Linear(fc3_units, 2)
+        self.fc4 = nn.Linear(fc3_units, 1)
+        self.dropout = nn.Dropout(p=0.2)
         self.reset_parameters()
 
     def reset_parameters(self):
@@ -57,4 +58,5 @@ class Critic(nn.Module):
         x = torch.cat((xs, action), dim=1)
         x = F.leaky_relu(self.fc2(x))
         x = F.leaky_relu(self.fc3(x))
+        x = self.dropout(x)
         return self.fc4(x)

@@ -5,18 +5,18 @@ from typing import List, Optional
 import numpy as np
 
 
-DEFAULT_BATCH_SIZE = 128
-DEFAULT_MAX_SIZE = 1024 * 256
+DEFAULT_BATCH_SIZE = 4096
+DEFAULT_MAX_SIZE = int(1e5)
 
 
 @dataclass
-class ReplayBatch:
-    """Stores a state transition tuples of a batch."""
-    states: np.array
-    actions: np.array
-    rewards: List[float]
-    next_states: np.array
-    dones: List[bool]
+class ReplayTuple:
+    """Stores a state transition tuple."""
+    state: np.array
+    action: np.array
+    reward: float
+    next_state: np.array
+    done: bool
 
 
 class ReplayBuffer:
@@ -30,21 +30,21 @@ class ReplayBuffer:
         
         self.buffer = deque(maxlen=max_size)
     
-    def add_multiple(
+    def add(
         self,
-        states: np.array,
-        actions: np.array,
-        rewards: List[float],
-        next_states: np.array,
-        dones: List[bool]
+        state: np.array,
+        action: np.array,
+        reward: float,
+        next_state: np.array,
+        done: bool
     ):
         """Add item to the buffer."""
-        item = ReplayBatch(
-            states=states,
-            actions=actions,
-            rewards=rewards,
-            next_states=next_states,
-            dones=dones
+        item = ReplayTuple(
+            state=state,
+            action=action,
+            reward=reward,
+            next_state=next_state,
+            done=done
         )
         self.buffer.append(item)
 
@@ -72,5 +72,5 @@ class ReplayBuffer:
         
         items = np.random.choice(self.buffer, size=size, replace=replace)
         
-        return tuple(zip(*[(i.states, i.actions, i.rewards, i.next_states, i.dones)
+        return tuple(zip(*[(i.state, i.action, i.reward, i.next_state, i.done)
                            for i in items]))
